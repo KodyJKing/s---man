@@ -87,6 +87,7 @@ public class Player : MonoBehaviour {
         if (!left.touch && !right.touch) alreadyWallJumped = false;
         if(inJumpWindow() && (left.touch || right.touch) && spendStamina(jumpCost, jumpCoolDown, false))
         {
+            body.velocity = Vector2.zero;
             face(left.touch);
             body.AddForce(new Vector2(jumpForce * Mathf.Cos(wallJumpAngle) * (left.touch ? 1 : -1), jumpForce * Mathf.Sin(wallJumpAngle)));
             alreadyWallJumped = true;
@@ -111,23 +112,21 @@ public class Player : MonoBehaviour {
                 GameObject proj = spawnBullet((!facingRight ? 180 : 0) + randomAngle);
                 proj.transform.Translate(transform.right * 0.28F);
             }
+            body.AddForce(Vector2.left * (facingRight ? 100 : -100));
         }
 
         if (Input.GetMouseButton(1) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
-        {
             Time.timeScale = 0.25F;
-        } else
-        {
+        else
             Time.timeScale = 1;
-        }
 
         if(Input.GetKey(KeyCode.LeftControl) && (left.touch || right.touch) && !alreadyWallJumped && spendStamina(Time.deltaTime * 50, 0, true))
-        {
-            Debug.Log("Grab!");
             body.AddForce(-body.velocity * 30);
-        }
 
         walkTime += Mathf.Abs(body.velocity.x) * Time.deltaTime;
+
+        if (Mathf.Abs(body.velocity.x) < 0.01)
+            walkTime = 0;
 
         sprite.sprite = foot.touch ? walkFrames[Mathf.FloorToInt(walkTime * animSpeed) % 4] : walkFrames[0];
 	}
@@ -166,9 +165,6 @@ public class Player : MonoBehaviour {
         fillRect(new Rect(0, 0, maxStamina, 20), staminaBarBackgroundColor);
         fillRect(new Rect(0, 0, stamina, 20), staminaBarColor);
         fillRect(new Rect(0, 20, coolDown * coolDownBarScale, 20), coolDownbarColor);
-
-        //float coolDownBarLength = coolDown * coolDownBarScale;
-        //box(new Rect(Screen.width - coolDownBarLength, 0, coolDownBarLength, 20), coolDownbarColor);
     }
 
     void fillRect(Rect rect, Color color)

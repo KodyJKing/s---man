@@ -3,6 +3,10 @@ using System.Collections;
 
 public class Bullet : MonoBehaviour {
 
+    static int numActive = 0;
+    static float oldest = 0;
+    public int maxActive = 30;
+
     Rigidbody2D body;
 
     public float speed;
@@ -14,12 +18,19 @@ public class Bullet : MonoBehaviour {
     void Start () {
         body = GetComponent<Rigidbody2D>();
         body.velocity = transform.right * speed;
+        numActive++;
     }
 	
 	// Update is called once per frame
 	void Update () {
         age += Time.deltaTime;
-        if (age >= maxAge)
+        if (age >= oldest)
+            oldest = age;
+        if (age >= maxAge || numActive > maxActive)
+        {
             DestroyImmediate(gameObject);
+            numActive--;
+            oldest = 0;
+        }
 	}
 }

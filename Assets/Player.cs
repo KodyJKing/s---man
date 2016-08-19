@@ -23,10 +23,12 @@ public class Player : MonoBehaviour {
     public float jumpCost = 20;
     public float jumpCoolDown = 0.25F;
     public float wallJumpAngle = 45;
-
+    public float airControl = 0.2F;
     public float staminaRegen = 50;
+    public float airStaminaRegen = 20;
     public float maxStamina = 100;
     public float jumpWindow = 0.1F;
+    public float bulletTimeCost = 60;
 
     public Color staminaBarColor;
     public Color staminaBarBackgroundColor;
@@ -37,6 +39,7 @@ public class Player : MonoBehaviour {
     float sideJumpForce;
 
     bool facingRight = true;
+    bool alreadyWallJumped = false;
     float walkTime;
     float stamina;
     float coolDown;
@@ -62,8 +65,8 @@ public class Player : MonoBehaviour {
 
 	void Update () {
 
-        if (foot.touch)
-            stamina += staminaRegen * Time.deltaTime;
+        float currStaminaRegen = foot.touch ? staminaRegen : airStaminaRegen;
+        stamina += currStaminaRegen * Time.deltaTime;
         if (stamina > maxStamina)
             stamina = maxStamina;
 
@@ -71,10 +74,9 @@ public class Player : MonoBehaviour {
         if (coolDown < 0)
             coolDown = 0;
 
-        float control = foot.touch ? 1F : 0.2F;
-        bool moving = false;
+        float control = foot.touch ? 1F : airControl;
 
-        if (Input.GetKey("space"))
+        if (Input.GetKey(KeyCode.Space))
             spacePressTime += Time.deltaTime;
         else
             spacePressTime = 0;
@@ -82,23 +84,23 @@ public class Player : MonoBehaviour {
         if (inJumpWindow() && foot.touch && spendStamina(jumpCost, jumpCoolDown, false))
             body.AddForce(new Vector2(0, jumpForce));
 
+        if (!left.touch && !right.touch) alreadyWallJumped = false;
         if(inJumpWindow() && (left.touch || right.touch) && spendStamina(jumpCost, jumpCoolDown, false))
         {
             face(left.touch);
             body.AddForce(new Vector2(jumpForce * Mathf.Cos(wallJumpAngle) * (left.touch ? 1 : -1), jumpForce * Mathf.Sin(wallJumpAngle)));
+            alreadyWallJumped = true;
         }
 
-        if (Input.GetKey("d")) {
-            body.AddForce(new Vector2(1000 * control * Time.deltaTime, 0));
+        if (Input.GetKey(KeyCode.D)) {
+            body.AddForce(new Vector2(walkingForce * control * Time.deltaTime, 0));
             if(foot.touch) face(true);
-            moving = true;
         }
 
-        if (Input.GetKey("a"))
+        if (Input.GetKey(KeyCode.A))
         {
             body.AddForce(new Vector2(-walkingForce * control * Time.deltaTime, 0));
             if(foot.touch) face(false);
-            moving = true;
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -110,10 +112,20 @@ public class Player : MonoBehaviour {
                 proj.transform.Translate(transform.right * 0.28F);
             }
         }
-            
 
-        if (foot.touch && !moving)
-            body.AddForce(new Vector2(- body.velocity.x * Time.deltaTime * 100, 0));
+        if (Input.GetMouseButton(1) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
+        {
+            Time.timeScale = 0.25F;
+        } else
+        {
+            Time.timeScale = 1;
+        }
+
+        if(Input.GetKey(KeyCode.LeftControl) && (left.touch || right.touch) && !alreadyWallJumped && spendStamina(Time.deltaTime * 50, 0, true))
+        {
+            Debug.Log("Grab!");
+            body.AddForce(-body.velocity * 30);
+        }
 
         walkTime += Mathf.Abs(body.velocity.x) * Time.deltaTime;
 
@@ -151,15 +163,15 @@ public class Player : MonoBehaviour {
 
     void OnGUI()
     {
-        box(new Rect(0, 0, maxStamina, 20), staminaBarBackgroundColor);
-        box(new Rect(0, 0, stamina, 20), staminaBarColor);
-        box(new Rect(0, 20, coolDown * coolDownBarScale, 20), coolDownbarColor);
+        fillRect(new Rect(0, 0, maxStamina, 20), staminaBarBackgroundColor);
+        fillRect(new Rect(0, 0, stamina, 20), staminaBarColor);
+        fillRect(new Rect(0, 20, coolDown * coolDownBarScale, 20), coolDownbarColor);
 
         //float coolDownBarLength = coolDown * coolDownBarScale;
         //box(new Rect(Screen.width - coolDownBarLength, 0, coolDownBarLength, 20), coolDownbarColor);
     }
 
-    void box(Rect rect, Color color)
+    void fillRect(Rect rect, Color color)
     {
         px.SetPixel(0, 0, color);
         px.Apply();

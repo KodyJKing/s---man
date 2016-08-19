@@ -29,6 +29,7 @@ public class Player : MonoBehaviour {
     public float maxStamina = 100;
     public float jumpWindow = 0.1F;
     public float bulletTimeCost = 60;
+    public float maxWalkSpeed = 10;
 
     public Color staminaBarColor;
     public Color staminaBarBackgroundColor;
@@ -96,12 +97,16 @@ public class Player : MonoBehaviour {
         if (Input.GetKey(KeyCode.D)) {
             body.AddForce(new Vector2(walkingForce * control * Time.deltaTime, 0));
             if(foot.touch) face(true);
+            if (body.velocity.x > maxWalkSpeed)
+                body.velocity = new Vector2(maxWalkSpeed, body.velocity.y);
         }
 
         if (Input.GetKey(KeyCode.A))
         {
             body.AddForce(new Vector2(-walkingForce * control * Time.deltaTime, 0));
-            if(foot.touch) face(false);
+            if (foot.touch) face(false);
+            if (body.velocity.x < -maxWalkSpeed)
+                body.velocity = new Vector2(-maxWalkSpeed, body.velocity.y);
         }
 
         if (Input.GetMouseButtonDown(0))

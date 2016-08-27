@@ -64,7 +64,6 @@ public class Player : MonoBehaviour {
         sprite = GetComponent<SpriteRenderer>();
 	}
 
-    int jumps = 0;
 	void Update () {
 
         float currStaminaRegen = foot.touch ? staminaRegen : airStaminaRegen;
@@ -86,8 +85,6 @@ public class Player : MonoBehaviour {
         if (inJumpWindow() && foot.touch && spendStamina(jumpCost, jumpCoolDown, false))
         {
             body.AddForce(new Vector2(0, jumpForce));
-            Debug.Log("Jump: " + jumps);
-            jumps++;
         }
 
         if (!left.touch && !right.touch) alreadyWallJumped = false;
@@ -143,10 +140,10 @@ public class Player : MonoBehaviour {
 
     bool spendStamina(float amount, float coolDown, bool ignoreCooldown)
     {
-        if ((ignoreCooldown || this.coolDown <= 0) && stamina >= amount)
+        if ((ignoreCooldown || this.coolDown <= 0) && stamina >= 0)
         {
             stamina -= amount;
-            this.coolDown = coolDown;
+            if(coolDown > 0) this.coolDown = coolDown;
             return true;
         }
         return false;

@@ -19,7 +19,8 @@ public class Zombie : Character {
 	new void Update () {
         base.Update();
 
-        bool seeking = Mathf.Abs(player.transform.position.x - transform.position.x) > seekDist && (player.transform.position - transform.position).magnitude < maxSeekDist;
+        float dist = (player.transform.position - transform.position).magnitude;
+        bool seeking = dist > seekDist && dist < maxSeekDist;
 
         if (player.transform.position.x > transform.position.x)
         {

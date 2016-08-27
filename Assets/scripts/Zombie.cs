@@ -1,0 +1,37 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class Zombie : Character {
+
+    GameObject player;
+
+    public float seekDist = 1;
+    public float maxSeekDist = 10;
+
+    // Use this for initialization
+    new void Start () {
+        base.Start();
+
+        player = GameObject.Find("player");
+	}
+	
+	// Update is called once per frame
+	new void Update () {
+        base.Update();
+
+        bool seeking = Mathf.Abs(player.transform.position.x - transform.position.x) > seekDist && (player.transform.position - transform.position).magnitude < maxSeekDist;
+
+        if (player.transform.position.x > transform.position.x)
+        {
+            face(true);
+            if (true) walk(true);
+        } else
+        {
+            face(false);
+            if (true) walk(false);
+        }
+
+        if (facingRight && right.touch || !facingRight && left.touch || Mathf.Abs(body.velocity.x) < 1F && seeking)
+            if(Random.Range(0, 1F) < 0.5F) tryJump();
+    }
+}

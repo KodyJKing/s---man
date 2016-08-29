@@ -60,18 +60,18 @@ public class Player : Character {
         if (Input.GetKey(KeyCode.A))
             walk(false);
 
-        if (Input.GetKeyDown("left"))
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             face(false);
             shoot();
         }
-        if (Input.GetKeyDown("right"))
+        if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             face(true);
             shoot();
         }
 
-        if (Input.GetMouseButton(1) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
+        if (Input.GetKey(KeyCode.CapsLock) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
             Time.timeScale = 0.25F;
         else
             Time.timeScale = 1;

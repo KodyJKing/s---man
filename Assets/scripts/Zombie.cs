@@ -32,7 +32,10 @@ public class Zombie : Character {
             if (true) walk(false);
         }
 
-        if (facingRight && right.touch || !facingRight && left.touch || Mathf.Abs(body.velocity.x) < 1F && seeking)
-            if(Random.Range(0, 1F) < 0.5F) tryJump();
+        if (facingRight && right.touch || !facingRight && left.touch)// || Mathf.Abs(body.velocity.x) < 1F && seeking)
+            body.AddForce(Vector2.up * 50);
+
+        if(Mathf.Abs(body.velocity.x) < 1F && seeking && Random.Range(0, 1F) < 0.5F)
+            tryJump();
     }
 }

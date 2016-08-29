@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Assets.scripts;
 
 public class Player : Character {
 
@@ -22,8 +23,10 @@ public class Player : Character {
     bool alreadyWallJumped = false;
     float spacePressTime = 0;
     float fallTime = 0;
+    float wallJumpTime = 99;
 
     public Sprite[] fallFrames;
+    public Sprite[] wallJumpFrames;
     public Sprite wallFrame;
 
     new void Start() {
@@ -54,6 +57,8 @@ public class Player : Character {
         if (inJumpWindow())
             tryJump();
 
+        wallJumpTime += Time.deltaTime;
+        if (foot.touch) wallJumpTime = 99;
         if (!left.touch && !right.touch) alreadyWallJumped = false;
         if (inJumpWindow() && (left.touch || right.touch) && spendStamina(jumpCost, jumpCoolDown, false))
         {
@@ -61,6 +66,7 @@ public class Player : Character {
             face(left.touch);
             body.AddForce(new Vector2(jumpForce * Mathf.Cos(wallJumpAngle) * (left.touch ? 1 : -1), jumpForce * Mathf.Sin(wallJumpAngle)));
             alreadyWallJumped = true;
+            wallJumpTime = 0;
         }
 
         if (Input.GetKey(KeyCode.D))
@@ -81,7 +87,7 @@ public class Player : Character {
         }
 
         if (Input.GetKey(KeyCode.RightControl) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
-            Time.timeScale = 0.25F;
+            Time.timeScale = 0.5F;
         else
             Time.timeScale = 1;
 
@@ -93,6 +99,11 @@ public class Player : Character {
                 body.AddForce(Vector2.left * Time.deltaTime * 1000);
             body.AddForce(-body.velocity * 30);
         }
+
+        if ((left.touch ^ right.touch) && !foot.touch)
+            face(right.touch);
+
+        //findObstacle();
     }
 
     bool inJumpWindow()
@@ -135,20 +146,31 @@ public class Player : Character {
 
     override protected void setFrame()
     {
-        if ((left.touch || right.touch) && !foot.touch)
-        {
+        if (wallJumpTime < 0.5F)
+            setWallJumpFrame();
+        else if ((left.touch || right.touch) && !foot.touch)
             sprite.sprite = wallFrame;
-            sprite.flipX = facingRight;
-        }
         else if (fallTime > 0)
             setFallFrame();
         else
             setWalkFrame();
     }
 
-    protected void setFallFrame()
+    void setFallFrame()
     {
         int frame = Mathf.Min(Mathf.FloorToInt(fallTime * 15), fallFrames.Length - 1);
         sprite.sprite = fallFrames[frame];
+    }
+
+    void setWallJumpFrame()
+    {
+        int frame = Mathf.Min(Mathf.FloorToInt(wallJumpTime * 20), wallJumpFrames.Length - 1);
+        sprite.sprite = wallJumpFrames[frame];
+        sprite.flipX = !facingRight;
+    }
+
+    void findObstacle()
+    {
+        Navigation.arcTrace(body.position, body.velocity, body.gravityScale * Physics2D.gravity, 1, 10, "platform");
     }
 }

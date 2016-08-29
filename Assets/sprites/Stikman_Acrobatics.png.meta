@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 0a77fe28199ef194db84c4486b24838d
-timeCreated: 1472440920
+timeCreated: 1472450724
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -65,7 +65,7 @@ TextureImporter:
       name: Stikman_Acrobatics_0
       rect:
         serializedVersion: 2
-        x: 8
+        x: 13
         y: 1
         width: 18
         height: 40
@@ -78,7 +78,7 @@ TextureImporter:
       name: Stikman_Acrobatics_1
       rect:
         serializedVersion: 2
-        x: 51
+        x: 54
         y: 7
         width: 16
         height: 34
@@ -91,7 +91,7 @@ TextureImporter:
       name: Stikman_Acrobatics_2
       rect:
         serializedVersion: 2
-        x: 92
+        x: 95
         y: 7
         width: 18
         height: 33
@@ -104,7 +104,7 @@ TextureImporter:
       name: Stikman_Acrobatics_3
       rect:
         serializedVersion: 2
-        x: 133
+        x: 134
         y: 8
         width: 20
         height: 33
@@ -117,7 +117,7 @@ TextureImporter:
       name: Stikman_Acrobatics_4
       rect:
         serializedVersion: 2
-        x: 174
+        x: 172
         y: 10
         width: 23
         height: 31
@@ -130,7 +130,7 @@ TextureImporter:
       name: Stikman_Acrobatics_5
       rect:
         serializedVersion: 2
-        x: 216
+        x: 214
         y: 9
         width: 21
         height: 32

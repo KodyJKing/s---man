@@ -14,6 +14,9 @@ public class Player : Character {
     public float jumpWindow = 0.1F;
     public float bulletTimeCost = 60;
 
+    public float dashCost = 40;
+    public float dashCooldown = 0.4F;
+
     public Color staminaBarColor;
     public Color staminaBarBackgroundColor;
 
@@ -24,10 +27,12 @@ public class Player : Character {
     float spacePressTime = 0;
     float fallTime = 0;
     float wallJumpTime = 99;
+    float dashTime = 99;
 
     public Sprite[] fallFrames;
     public Sprite[] wallJumpFrames;
     public Sprite wallFrame;
+    public Sprite dashFrame;
 
     new void Start() {
         base.Start();
@@ -75,15 +80,16 @@ public class Player : Character {
         if (Input.GetKey(KeyCode.A))
             walk(false);
 
+        dashTime += Time.deltaTime;
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             face(false);
-            shoot();
+            dash();
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             face(true);
-            shoot();
+            dash();
         }
 
         if (Input.GetKey(KeyCode.RightControl) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
@@ -122,6 +128,16 @@ public class Player : Character {
         //body.AddForce(Vector2.left * (facingRight ? 100 : -100));
     }
 
+    void dash()
+    {
+        if (!spendStamina(dashCost, dashCooldown, false))
+            return;
+
+        dashTime = 0;
+        body.velocity *= 0.25F;
+        body.AddForce((facingRight ? Vector2.right : Vector2.left) * 300);
+    }
+
     GameObject spawnBullet(float angle)
     {
         GameObject proj = (GameObject)Instantiate(projectile, transform.position, transform.rotation);
@@ -150,6 +166,8 @@ public class Player : Character {
             setWallJumpFrame();
         else if ((left.touch || right.touch) && !foot.touch)
             sprite.sprite = wallFrame;
+        else if (dashTime < 0.5F)
+            sprite.sprite = dashFrame;
         else if (fallTime > 0)
             setFallFrame();
         else
@@ -166,7 +184,6 @@ public class Player : Character {
     {
         int frame = Mathf.Min(Mathf.FloorToInt(wallJumpTime * 20), wallJumpFrames.Length - 1);
         sprite.sprite = wallJumpFrames[frame];
-        sprite.flipX = !facingRight;
     }
 
     void findObstacle()

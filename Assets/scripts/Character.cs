@@ -60,6 +60,7 @@ public class Character : MonoBehaviour {
         if (Mathf.Abs(body.velocity.x) < 0.01)
             walkTime = 0;
 
+        sprite.flipX = !facingRight;
         setFrame();
     }
 

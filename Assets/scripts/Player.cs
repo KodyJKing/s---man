@@ -21,8 +21,12 @@ public class Player : Character {
 
     bool alreadyWallJumped = false;
     float spacePressTime = 0;
+    float fallTime = 0;
 
-    new void Start () {
+    public Sprite[] fallFrames;
+    public Sprite wallFrame;
+
+    new void Start() {
         base.Start();
 
         px = new Texture2D(1, 1);
@@ -34,7 +38,7 @@ public class Player : Character {
         wallJumpAngle *= Mathf.PI / 180;
     }
 
-	new void Update () {
+    new void Update() {
         base.Update();
 
         if (Input.GetKey(KeyCode.Space))
@@ -42,11 +46,16 @@ public class Player : Character {
         else
             spacePressTime = 0;
 
+        if (foot.touch || body.velocity.y > 0)
+            fallTime = 0;
+        else
+            fallTime += Time.deltaTime;
+
         if (inJumpWindow())
             tryJump();
 
         if (!left.touch && !right.touch) alreadyWallJumped = false;
-        if(inJumpWindow() && (left.touch || right.touch) && spendStamina(jumpCost, jumpCoolDown, false))
+        if (inJumpWindow() && (left.touch || right.touch) && spendStamina(jumpCost, jumpCoolDown, false))
         {
             body.velocity = Vector2.zero;
             face(left.touch);
@@ -71,14 +80,20 @@ public class Player : Character {
             shoot();
         }
 
-        if (Input.GetKey(KeyCode.CapsLock) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
+        if (Input.GetKey(KeyCode.RightControl) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
             Time.timeScale = 0.25F;
         else
             Time.timeScale = 1;
 
-        if(Input.GetKey(KeyCode.LeftControl) && (left.touch || right.touch) && !alreadyWallJumped && spendStamina(Time.deltaTime * 50, 0, true))
+        if (Input.GetKey(KeyCode.LeftControl) && (left.touch ^ right.touch) && !alreadyWallJumped && spendStamina(Time.deltaTime * 50, 0, true))
+        {
+            if (right.touch)
+                body.AddForce(Vector2.right * Time.deltaTime * 1000);
+            else
+                body.AddForce(Vector2.left * Time.deltaTime * 1000);
             body.AddForce(-body.velocity * 30);
-	}
+        }
+    }
 
     bool inJumpWindow()
     {
@@ -91,7 +106,7 @@ public class Player : Character {
         {
             float randomAngle = Random.Range(-0, 0);
             GameObject proj = spawnBullet((!facingRight ? 180 : 0) + randomAngle);
-            proj.transform.Translate(transform.right * 0.1F);
+            proj.transform.Translate(transform.right * 0.15F);
         }
         //body.AddForce(Vector2.left * (facingRight ? 100 : -100));
     }
@@ -116,5 +131,24 @@ public class Player : Character {
         px.Apply();
 
         GUI.DrawTexture(rect, px, ScaleMode.StretchToFill, true, 10);
+    }
+
+    override protected void setFrame()
+    {
+        if ((left.touch || right.touch) && !foot.touch)
+        {
+            sprite.sprite = wallFrame;
+            sprite.flipX = facingRight;
+        }
+        else if (fallTime > 0)
+            setFallFrame();
+        else
+            setWalkFrame();
+    }
+
+    protected void setFallFrame()
+    {
+        int frame = Mathf.Min(Mathf.FloorToInt(fallTime * 15), fallFrames.Length - 1);
+        sprite.sprite = fallFrames[frame];
     }
 }

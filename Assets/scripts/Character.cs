@@ -60,13 +60,13 @@ public class Character : MonoBehaviour {
         if (Mathf.Abs(body.velocity.x) < 0.01)
             walkTime = 0;
 
-        sprite.sprite = foot.touch ? walkFrames[Mathf.FloorToInt(walkTime * animSpeed) % walkFrames.Length] : walkFrames[0];
+        setFrame();
     }
 
     public void face(bool right)
     {
+        sprite.flipX = !facingRight;
         facingRight = right;
-        sprite.flipX = !right;
     }
 
     public bool spendStamina(float amount, float coolDown, bool ignoreCooldown)
@@ -100,5 +100,15 @@ public class Character : MonoBehaviour {
     {
         if(foot.touch && spendStamina(jumpCost, jumpCoolDown, false))
             body.AddForce(new Vector2(0, jumpForce));
+    }
+    
+    protected virtual void setFrame()
+    {
+        setWalkFrame();
+    }
+
+    protected void setWalkFrame()
+    {
+        sprite.sprite = foot.touch ? walkFrames[Mathf.FloorToInt(walkTime * animSpeed) % walkFrames.Length] : walkFrames[0];
     }
 }

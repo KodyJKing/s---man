@@ -25,16 +25,16 @@ public class Zombie : Character {
         if (player.transform.position.x > transform.position.x)
         {
             face(true);
-            if (true) walk(true);
+            if (seeking) walk(true);
         } else
         {
             face(false);
-            if (true) walk(false);
+            if (seeking) walk(false);
         }
 
-        if (facingRight && right.touch || !facingRight && left.touch)// || Mathf.Abs(body.velocity.x) < 1F && seeking)
-            body.AddForce(Vector2.up * 50);
-
+        if ((facingRight && right.touch || !facingRight && left.touch) && spendStamina(0.1F * Time.deltaTime, 0, true))
+            body.AddForce(Vector2.up * 20);
+            
         if(Mathf.Abs(body.velocity.x) < 1F && seeking && Random.Range(0, 1F) < 0.5F)
             tryJump();
     }

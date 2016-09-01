@@ -97,12 +97,14 @@ public class Character : MonoBehaviour {
 
     }
 
-    public virtual void tryJump()
+    public virtual bool tryJump()
     {
         if(foot.touch && spendStamina(jumpCost, jumpCoolDown, false))
         {
             body.AddForce(new Vector2(0, jumpForce));
+            return true;
         }
+        return false;
     }
     
     protected virtual void setFrame()

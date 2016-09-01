@@ -59,9 +59,18 @@ public class Player : Character {
         else
             fallTime += Time.deltaTime;
 
+<<<<<<< HEAD
 		if (inJumpWindow ()) 
 			tryJump();
         
+=======
+        if (inJumpWindow())
+        {
+            if(tryJump())
+                spacePressTime += jumpWindow;
+        }
+
+>>>>>>> d716a1b7256021894f24ed6c020fdd8664793a51
         wallJumpTime += Time.deltaTime;
         if (foot.touch) wallJumpTime = 99;
         if (!left.touch && !right.touch) alreadyWallJumped = false;
@@ -72,6 +81,7 @@ public class Player : Character {
             body.AddForce(new Vector2(jumpForce * Mathf.Cos(wallJumpAngle) * (left.touch ? 1 : -1), jumpForce * Mathf.Sin(wallJumpAngle)));
             alreadyWallJumped = true;
             wallJumpTime = 0;
+            spacePressTime += jumpWindow;
         }
 
         if (Input.GetKey(KeyCode.D))

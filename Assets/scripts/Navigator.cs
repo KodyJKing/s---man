@@ -29,12 +29,14 @@ public class Navigator : Character {
         }
     }
 
-    public override void tryJump()
+    public override bool tryJump()
     {
         if (foot.touch && spendStamina(jumpCost, jumpCoolDown, false))
         {
             body.velocity += new Vector2(0, jumpForce);
+            return true;
         }
+        return false;
     }
 
     bool canMakeJump()

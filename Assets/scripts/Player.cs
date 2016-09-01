@@ -109,6 +109,9 @@ public class Player : Character {
         if ((left.touch ^ right.touch) && !foot.touch)
             face(right.touch);
 
+        if (Input.GetKey(KeyCode.Q))
+            stamina = maxStamina;
+
         //findObstacle();
     }
 

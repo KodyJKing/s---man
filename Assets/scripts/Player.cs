@@ -60,7 +60,10 @@ public class Player : Character {
             fallTime += Time.deltaTime;
 
         if (inJumpWindow())
-            tryJump();
+        {
+            if(tryJump())
+                spacePressTime += jumpWindow;
+        }
 
         wallJumpTime += Time.deltaTime;
         if (foot.touch) wallJumpTime = 99;
@@ -72,6 +75,7 @@ public class Player : Character {
             body.AddForce(new Vector2(jumpForce * Mathf.Cos(wallJumpAngle) * (left.touch ? 1 : -1), jumpForce * Mathf.Sin(wallJumpAngle)));
             alreadyWallJumped = true;
             wallJumpTime = 0;
+            spacePressTime += jumpWindow;
         }
 
         if (Input.GetKey(KeyCode.D))

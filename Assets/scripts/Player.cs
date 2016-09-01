@@ -59,18 +59,15 @@ public class Player : Character {
         else
             fallTime += Time.deltaTime;
 
-<<<<<<< HEAD
 		if (inJumpWindow ()) 
 			tryJump();
-        
-=======
+       
         if (inJumpWindow())
         {
             if(tryJump())
                 spacePressTime += jumpWindow;
         }
 
->>>>>>> d716a1b7256021894f24ed6c020fdd8664793a51
         wallJumpTime += Time.deltaTime;
         if (foot.touch) wallJumpTime = 99;
         if (!left.touch && !right.touch) alreadyWallJumped = false;

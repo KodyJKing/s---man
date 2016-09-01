@@ -11,6 +11,8 @@ public class Character : MonoBehaviour {
     protected SpriteRenderer sprite;
 
     public Sprite[] walkFrames;
+    public Sprite idleFrame;
+
     public float animSpeed = 3;
 
     protected float walkTime;
@@ -114,6 +116,9 @@ public class Character : MonoBehaviour {
 
     protected void setWalkFrame()
     {
-        sprite.sprite = foot.touch ? walkFrames[Mathf.FloorToInt(walkTime * animSpeed) % walkFrames.Length] : walkFrames[0];
+        if (Mathf.Abs(body.velocity.x) < 0.1F)
+            sprite.sprite = idleFrame;
+        else
+            sprite.sprite = foot.touch ? walkFrames[Mathf.FloorToInt(walkTime * animSpeed) % walkFrames.Length] : walkFrames[0];
     }
 }

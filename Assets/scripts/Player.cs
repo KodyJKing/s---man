@@ -30,6 +30,7 @@ public class Player : Character {
     float fallTime = 0;
     float wallJumpTime = 99;
     float dashTime = 99;
+    float timeScale = 1;
 
     public Sprite[] fallFrames;
     public Sprite[] wallJumpFrames;
@@ -53,22 +54,26 @@ public class Player : Character {
     new void Update() {
         base.Update();
 
+        //Space downtime
         if (Input.GetKey(KeyCode.Space))
             spacePressTime += Time.deltaTime;
         else
             spacePressTime = 0;
 
+        //Fall time
         if (wideFoot.touch || body.velocity.y > 0)
             fallTime = 0;
         else
             fallTime += Time.deltaTime;
        
+        //Jumps
         if (inJumpWindow())
         {
             if(tryJump())
                 spacePressTime += jumpWindow;
         }
 
+        //Wall jumps
         wallJumpTime += Time.deltaTime;
         if (foot.touch) wallJumpTime = 99;
         if (!left.touch && !right.touch) alreadyWallJumped = false;
@@ -82,12 +87,14 @@ public class Player : Character {
             spacePressTime += jumpWindow;
         }
 
+        //Movement
         if (Input.GetKey(KeyCode.D))
             walk(true);
 
         if (Input.GetKey(KeyCode.A))
             walk(false);
 
+        //Dashing
         dashTime += Time.deltaTime;
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
@@ -100,11 +107,13 @@ public class Player : Character {
             dash();
         }
 
+        //Bullet Time
         if (Input.GetKey(KeyCode.RightShift) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
-            Time.timeScale = 0.5F;
+            Time.timeScale = timeScale * 0.5F;
         else
-            Time.timeScale = 1;
+            Time.timeScale = timeScale * 1;
 
+        //Wall Hang
         if (Input.GetKey(KeyCode.LeftShift) && (left.touch ^ right.touch) && !alreadyWallJumped && spendStamina(Time.deltaTime * 50, 0, true))
         {
             if (right.touch)
@@ -115,17 +124,31 @@ public class Player : Character {
             fallTime = 0;
         }
 
+        //Other
         if (shouldHang())
             face(right.touch);
-
-        if (Input.GetKey(KeyCode.Q))
-            stamina = maxStamina;
 
         if (fallTime > 3)
             onDeath();
 
+        if (Input.GetKeyDown(KeyCode.LeftBracket))
+            Time.timeScale *= 0.1F;
+
+        if (Input.GetKeyDown(KeyCode.RightBracket))
+            Time.timeScale *= 10F;
+
+        //Cheats
         if (Input.GetKeyDown(KeyCode.P))
             health -= 50;
+
+        if (Input.GetKey(KeyCode.Q))
+            stamina = maxStamina;
+
+        if (Input.GetKeyDown(KeyCode.LeftBracket))
+            timeScale -= 0.1F;
+
+        if (Input.GetKeyDown(KeyCode.RightBracket))
+            timeScale += 0.1F;
     }
 
     bool inJumpWindow()
@@ -168,6 +191,8 @@ public class Player : Character {
         fillRect(new Rect(0, 20, maxStamina, 20), staminaBarBackgroundColor);
         fillRect(new Rect(0, 20, stamina, 20), staminaBarColor);
         fillRect(new Rect(0, 40, coolDown * coolDownBarScale, 20), coolDownbarColor);
+
+        GUI.Label(new Rect(Screen.width - 100, 0, 100, 20), "Timescale: " + timeScale.ToString());
     }
 
     void fillRect(Rect rect, Color color)

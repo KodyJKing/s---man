@@ -58,7 +58,7 @@ public class Player : Character {
         else
             spacePressTime = 0;
 
-        if (foot.touch || body.velocity.y > 0)
+        if (wideFoot.touch || body.velocity.y > 0)
             fallTime = 0;
         else
             fallTime += Time.deltaTime;
@@ -115,7 +115,7 @@ public class Player : Character {
             fallTime = 0;
         }
 
-        if ((left.touch ^ right.touch) && !foot.touch)
+        if (shouldHang())
             face(right.touch);
 
         if (Input.GetKey(KeyCode.Q))
@@ -182,7 +182,7 @@ public class Player : Character {
     {
         if (wallJumpTime < 0.5F)
             setWallJumpFrame();
-        else if ((left.touch || right.touch) && !foot.touch)
+        else if (shouldHang())
             sprite.sprite = wallFrame;
         else if (dashTime < 0.5F)
             sprite.sprite = dashFrame;
@@ -217,5 +217,16 @@ public class Player : Character {
         health = maxHealth;
         stamina = maxStamina;
         body.velocity = new Vector2(0, 0);
+    }
+
+    bool shouldHang()
+    {
+        if (!(left.touch ^ right.touch))
+            return false;
+        if (!wideFoot.touch)
+            return true;
+        Collider2D platform = wideFoot.contact.GetComponent<Collider2D>();
+        Collider2D footBox = wideFoot.GetComponent<Collider2D>();
+        return platform.bounds.max.y > footBox.bounds.max.y;
     }
 }

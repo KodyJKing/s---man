@@ -16,6 +16,7 @@ public class Player : Character {
 
     public float dashCost = 40;
     public float dashCooldown = 0.4F;
+    public float dashForce = 1200;
 
     public Color staminaBarColor;
     public Color staminaBarBackgroundColor;
@@ -149,6 +150,9 @@ public class Player : Character {
 
         if (Input.GetKeyDown(KeyCode.RightBracket))
             timeScale += 0.1F;
+
+        if (timeScale < 0)
+            timeScale = 0;
     }
 
     bool inJumpWindow()
@@ -174,7 +178,7 @@ public class Player : Character {
 
         dashTime = 0;
         body.velocity *= 0.25F;
-        body.AddForce((facingRight ? Vector2.right : Vector2.left) * 300);
+        body.AddForce((facingRight ? Vector2.right : Vector2.left) * dashForce);
     }
 
     GameObject spawnBullet(float angle)
@@ -192,7 +196,7 @@ public class Player : Character {
         fillRect(new Rect(0, 20, stamina, 20), staminaBarColor);
         fillRect(new Rect(0, 40, coolDown * coolDownBarScale, 20), coolDownbarColor);
 
-        GUI.Label(new Rect(Screen.width - 100, 0, 100, 20), "Timescale: " + timeScale.ToString());
+        GUI.Label(new Rect(Screen.width / 2, 0, 200, 20), string.Format("Timescale: {0}%", Mathf.Floor(timeScale * 10) * 10));
     }
 
     void fillRect(Rect rect, Color color)

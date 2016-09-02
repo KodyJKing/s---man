@@ -4,6 +4,7 @@ using System.Collections;
 public class Character : MonoBehaviour {
 
     protected Sensor foot;
+    protected Sensor walkFoot;
     protected Sensor left;
     protected Sensor right;
 
@@ -40,6 +41,7 @@ public class Character : MonoBehaviour {
     // Use this for initialization
     protected void Start () {
         foot = transform.Find("foot").gameObject.GetComponent<Sensor>();
+        walkFoot = transform.Find("walkFoot").gameObject.GetComponent<Sensor>();
         left = transform.Find("left_side").gameObject.GetComponent<Sensor>();
         right = transform.Find("right_side").gameObject.GetComponent<Sensor>();
 
@@ -52,8 +54,8 @@ public class Character : MonoBehaviour {
 
     // Update is called once per frame
     protected void Update () {
-        control = foot.touch ? 1F : airControl;
-        currStaminaRegen = foot.touch ? staminaRegen : airStaminaRegen;
+        control = walkFoot.touch ? 1F : airControl;
+        currStaminaRegen = walkFoot.touch ? staminaRegen : airStaminaRegen;
         stamina += currStaminaRegen * Time.deltaTime;
         if (stamina > maxStamina)
             stamina = maxStamina;
@@ -127,7 +129,7 @@ public class Character : MonoBehaviour {
         if (Mathf.Abs(body.velocity.x) < 0.1F)
             sprite.sprite = idleFrame;
         else
-            sprite.sprite = foot.touch ? walkFrames[Mathf.FloorToInt(walkTime * animSpeed) % walkFrames.Length] : walkFrames[0];
+            sprite.sprite = walkFoot.touch ? walkFrames[Mathf.FloorToInt(walkTime * animSpeed) % walkFrames.Length] : walkFrames[0];
     }
 
     protected virtual void onDeath()

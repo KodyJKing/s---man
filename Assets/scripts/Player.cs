@@ -19,6 +19,8 @@ public class Player : Character {
 
     public Color staminaBarColor;
     public Color staminaBarBackgroundColor;
+    public Color healhBarColor;
+    public Color healthBarBackgroundColor;
 
     public Color coolDownbarColor;
     public float coolDownBarScale = 100;
@@ -33,6 +35,8 @@ public class Player : Character {
     public Sprite[] wallJumpFrames;
     public Sprite wallFrame;
     public Sprite dashFrame;
+
+    public Vector3 spawnPoint;
 
     new void Start() {
         base.Start();
@@ -58,9 +62,6 @@ public class Player : Character {
             fallTime = 0;
         else
             fallTime += Time.deltaTime;
-
-		if (inJumpWindow ()) 
-			tryJump();
        
         if (inJumpWindow())
         {
@@ -99,18 +100,19 @@ public class Player : Character {
             dash();
         }
 
-        if (Input.GetKey(KeyCode.RightControl) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
+        if (Input.GetKey(KeyCode.RightShift) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
             Time.timeScale = 0.5F;
         else
             Time.timeScale = 1;
 
-        if (Input.GetKey(KeyCode.LeftControl) && (left.touch ^ right.touch) && !alreadyWallJumped && spendStamina(Time.deltaTime * 50, 0, true))
+        if (Input.GetKey(KeyCode.LeftShift) && (left.touch ^ right.touch) && !alreadyWallJumped && spendStamina(Time.deltaTime * 50, 0, true))
         {
             if (right.touch)
                 body.AddForce(Vector2.right * Time.deltaTime * 1000);
             else
                 body.AddForce(Vector2.left * Time.deltaTime * 1000);
             body.AddForce(-body.velocity * 30);
+            fallTime = 0;
         }
 
         if ((left.touch ^ right.touch) && !foot.touch)
@@ -119,7 +121,11 @@ public class Player : Character {
         if (Input.GetKey(KeyCode.Q))
             stamina = maxStamina;
 
-        //findObstacle();
+        if (fallTime > 3)
+            onDeath();
+
+        if (Input.GetKeyDown(KeyCode.P))
+            health -= 50;
     }
 
     bool inJumpWindow()
@@ -157,9 +163,11 @@ public class Player : Character {
 
     void OnGUI()
     {
-        fillRect(new Rect(0, 0, maxStamina, 20), staminaBarBackgroundColor);
-        fillRect(new Rect(0, 0, stamina, 20), staminaBarColor);
-        fillRect(new Rect(0, 20, coolDown * coolDownBarScale, 20), coolDownbarColor);
+        fillRect(new Rect(0, 0, maxHealth, 20), healthBarBackgroundColor);
+        fillRect(new Rect(0, 0, health, 20), healhBarColor);
+        fillRect(new Rect(0, 20, maxStamina, 20), staminaBarBackgroundColor);
+        fillRect(new Rect(0, 20, stamina, 20), staminaBarColor);
+        fillRect(new Rect(0, 40, coolDown * coolDownBarScale, 20), coolDownbarColor);
     }
 
     void fillRect(Rect rect, Color color)
@@ -199,5 +207,15 @@ public class Player : Character {
     void findObstacle()
     {
         Navigation.arcTrace(body.position, body.velocity, body.gravityScale * Physics2D.gravity, 1, 10, "platform");
+    }
+
+    protected override void onDeath()
+    {
+        alreadyWallJumped = false;
+        fallTime = 0;
+        body.position = spawnPoint;
+        health = maxHealth;
+        stamina = maxStamina;
+        body.velocity = new Vector2(0, 0);
     }
 }

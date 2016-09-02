@@ -28,8 +28,10 @@ public class Character : MonoBehaviour {
     public float staminaRegen = 50;
     public float airStaminaRegen = 20;
     public float maxStamina = 100;
+    public float maxHealth = 100;
     public float airControl;
 
+    protected float health;
     protected float stamina;
     protected float coolDown;
     protected float currStaminaRegen;
@@ -43,6 +45,9 @@ public class Character : MonoBehaviour {
 
         body = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
+
+        stamina = maxStamina;
+        health = maxHealth;
     }
 
     // Update is called once per frame
@@ -64,6 +69,9 @@ public class Character : MonoBehaviour {
 
         sprite.flipX = !facingRight;
         setFrame();
+
+        if (health <= 0)
+            onDeath();
     }
 
     public void face(bool right)
@@ -120,5 +128,10 @@ public class Character : MonoBehaviour {
             sprite.sprite = idleFrame;
         else
             sprite.sprite = foot.touch ? walkFrames[Mathf.FloorToInt(walkTime * animSpeed) % walkFrames.Length] : walkFrames[0];
+    }
+
+    protected virtual void onDeath()
+    {
+        DestroyImmediate(gameObject);
     }
 }

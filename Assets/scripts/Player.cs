@@ -109,7 +109,7 @@ public class Player : Character {
         }
 
         //Bullet Time
-        if (Input.GetKey(KeyCode.RightShift) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
+        if (Input.GetKey(KeyCode.W) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
             Time.timeScale = timeScale * 0.5F;
         else
             Time.timeScale = timeScale * 1;

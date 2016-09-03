@@ -256,6 +256,6 @@ public class Player : Character {
             return true;
         Collider2D platform = wideFoot.contact.GetComponent<Collider2D>();
         Collider2D footBox = wideFoot.GetComponent<Collider2D>();
-        return platform.bounds.max.y > footBox.bounds.max.y;
+        return platform.bounds.max.y - 0.5F > footBox.bounds.max.y;
     }
 }

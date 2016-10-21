@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Assets.scripts;
+using UnityEngine.SceneManagement;
 
 public class Player : Character {
 
@@ -38,7 +39,7 @@ public class Player : Character {
     public Sprite wallFrame;
     public Sprite dashFrame;
 
-    public Vector3 spawnPoint;
+    //public Vector3 spawnPoint;
 
     new void Start() {
         base.Start();
@@ -153,6 +154,12 @@ public class Player : Character {
 
         if (timeScale < 0)
             timeScale = 0;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            transform.position = new Vector3(target.x, target.y, transform.position.z);
+        }
     }
 
     bool inJumpWindow()
@@ -240,12 +247,7 @@ public class Player : Character {
 
     protected override void onDeath()
     {
-        alreadyWallJumped = false;
-        fallTime = 0;
-        body.position = spawnPoint;
-        health = maxHealth;
-        stamina = maxStamina;
-        body.velocity = new Vector2(0, 0);
+        respawn();
     }
 
     bool shouldHang()
@@ -257,5 +259,19 @@ public class Player : Character {
         Collider2D platform = wideFoot.contact.GetComponent<Collider2D>();
         Collider2D footBox = wideFoot.GetComponent<Collider2D>();
         return platform.bounds.max.y - 0.5F > footBox.bounds.max.y;
+    }
+
+    public override void respawn()
+    {
+        //base.respawn();
+        //alreadyWallJumped = false;
+        //fallTime = 0;
+        restartCurrentScene();
+    }
+
+    public void restartCurrentScene()
+    {
+        int scene = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(scene, LoadSceneMode.Single);
     }
 }

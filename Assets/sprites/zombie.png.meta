@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 0be33a061c1f0bc45b7013f6f653f60d
-timeCreated: 1472276101
+timeCreated: 1477008686
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -48,7 +48,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 400
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
   textureType: 8
@@ -60,10 +60,10 @@ TextureImporter:
       name: zombie_0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 0
-        width: 19
-        height: 41
+        x: 0
+        y: 400
+        width: 200
+        height: 200
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -73,10 +73,10 @@ TextureImporter:
       name: zombie_1
       rect:
         serializedVersion: 2
-        x: 51
-        y: 0
-        width: 20
-        height: 41
+        x: 0
+        y: 200
+        width: 200
+        height: 200
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -86,23 +86,10 @@ TextureImporter:
       name: zombie_2
       rect:
         serializedVersion: 2
-        x: 95
+        x: 0
         y: 0
-        width: 13
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: zombie_3
-      rect:
-        serializedVersion: 2
-        x: 135
-        y: 0
-        width: 18
-        height: 41
+        width: 200
+        height: 200
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

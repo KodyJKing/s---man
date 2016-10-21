@@ -7,6 +7,7 @@ public class Zombie : Character {
 
     public float seekDist = 1;
     public float maxSeekDist = 10;
+    public int damage = 50;
 
     // Use this for initialization
     new void Start () {
@@ -20,7 +21,7 @@ public class Zombie : Character {
         base.Update();
 
         float dist = (player.transform.position - transform.position).magnitude;
-        bool seeking = dist > seekDist && dist < maxSeekDist;
+        bool seeking = dist > seekDist && dist < maxSeekDist && hasLineOfSight();
 
         if (player.transform.position.x > transform.position.x)
         {
@@ -37,5 +38,24 @@ public class Zombie : Character {
             
         if(Mathf.Abs(body.velocity.x) < 1F && seeking && Random.Range(0, 1F) < 0.5F)
             tryJump();
+
+        if(dist < seekDist && spendStamina(100, 1, false))
+        {
+            //Debug.Log("!");
+            Vector2 throwDir = (Vector2)(player.transform.position - transform.position) + Vector2.up;
+            player.GetComponent<Rigidbody2D>().velocity += throwDir * 50;
+            player.GetComponent<Character>().takeDamage(damage);
+        }
+    }
+
+    bool hasLineOfSight()
+    {
+        Vector3 toPlayer = player.transform.position - transform.position;
+        Vector3 from = transform.position + toPlayer.normalized * 2;
+        Vector3 to = player.transform.position;
+        Debug.DrawLine(from, to, Color.white, 10, false);
+        RaycastHit2D hit = Physics2D.Raycast(from, to - from, toPlayer.magnitude);
+        Debug.DrawLine(from, hit.point, Color.red, 10, false);
+        return hit.transform != null && hit.transform.gameObject == player;
     }
 }

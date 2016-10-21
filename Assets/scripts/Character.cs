@@ -38,6 +38,8 @@ public class Character : MonoBehaviour {
     protected float currStaminaRegen;
     protected float control;
 
+    protected Vector3 spawnPoint;
+
     // Use this for initialization
     protected void Start () {
         foot = transform.Find("foot").gameObject.GetComponent<Sensor>();
@@ -50,6 +52,8 @@ public class Character : MonoBehaviour {
 
         stamina = maxStamina;
         health = maxHealth;
+
+        spawnPoint = transform.position;
     }
 
     // Update is called once per frame
@@ -134,6 +138,19 @@ public class Character : MonoBehaviour {
 
     protected virtual void onDeath()
     {
-        DestroyImmediate(gameObject);
+        gameObject.SetActive(false);
+    }
+
+    public void takeDamage(int damage)
+    {
+        health -= damage;
+    }
+
+    public virtual void respawn()
+    {
+        body.position = spawnPoint;
+        health = maxHealth;
+        stamina = maxStamina;
+        body.velocity = new Vector2(0, 0);
     }
 }

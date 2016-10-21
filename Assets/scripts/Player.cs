@@ -97,6 +97,8 @@ public class Player : Character {
         //Dashing
         dashTime += Time.deltaTime;
         isDashing = dashTime < 0.5F;
+        if (!isDashing)
+            kickbox.isOld = false;
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             face(false);
@@ -148,8 +150,8 @@ public class Player : Character {
         if(isDashing && kickbox.touch && !kickbox.isOld)
         {
             kickbox.isOld = true;
-            kickbox.contact.SendMessage("takeDamage", 50);
-            kickbox.contact.SendMessage("knockback", (body.velocity - kickbox.contact.GetComponent<Rigidbody2D>().velocity) * 5);
+            //kickbox.contact.SendMessage("takeDamage", 50);
+            kickbox.contact.SendMessage("knockback", (body.velocity - kickbox.contact.GetComponent<Rigidbody2D>().velocity) * 3);
         }
 
 

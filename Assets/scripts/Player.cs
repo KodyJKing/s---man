@@ -151,7 +151,9 @@ public class Player : Character {
         {
             kickbox.isOld = true;
             //kickbox.contact.SendMessage("takeDamage", 50);
-            kickbox.contact.SendMessage("knockback", (body.velocity - kickbox.contact.GetComponent<Rigidbody2D>().velocity) * 3);
+            Vector2 kickDir = kickbox.contact.transform.position - transform.position;
+            //kickDir = new Vector2(kickDir.x * 2, kickDir.y);
+            kickbox.contact.SendMessage("knockback", kickDir.normalized * 80);
         }
 
 
@@ -255,6 +257,14 @@ public class Player : Character {
         int frame = Mathf.Min(Mathf.FloorToInt(wallJumpTime * 20), wallJumpFrames.Length - 1);
         sprite.sprite = wallJumpFrames[frame];
     }
+
+    /*public override void face(bool right)
+    {
+        if (isDashing)
+            return;
+        sprite.flipX = !facingRight;
+        facingRight = right;
+    }*/
 
     void findObstacle()
     {

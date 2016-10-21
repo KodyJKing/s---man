@@ -39,12 +39,11 @@ public class Zombie : Character {
         if(Mathf.Abs(body.velocity.x) < 1F && seeking && Random.Range(0, 1F) < 0.5F)
             tryJump();
 
-        if(dist < seekDist && spendStamina(100, 1, false))
+        if(dist < seekDist && spendStamina(50, 2, false))
         {
-            //Debug.Log("!");
-            Vector2 throwDir = (Vector2)(player.transform.position - transform.position) + Vector2.up;
-            player.GetComponent<Rigidbody2D>().velocity += throwDir * 50;
-            player.GetComponent<Character>().takeDamage(damage);
+            Vector2 throwDir = (Vector2)(player.transform.position - transform.position).normalized + Vector2.up;
+            player.SendMessage("takeDamage", damage);
+            player.SendMessage("knockback", throwDir * 55);
         }
     }
 

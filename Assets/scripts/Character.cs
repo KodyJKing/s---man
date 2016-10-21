@@ -80,7 +80,7 @@ public class Character : MonoBehaviour {
             onDeath();
     }
 
-    public void face(bool right)
+    public virtual void face(bool right)
     {
         sprite.flipX = !facingRight;
         facingRight = right;
@@ -143,7 +143,21 @@ public class Character : MonoBehaviour {
 
     public void takeDamage(int damage)
     {
-        health -= damage;
+        if (!invunerable())
+            health -= damage;
+        else
+            Debug.Log("iframe!");
+    }
+
+    public void knockback(Vector2 dir)
+    {
+        if(!invunerable())
+            body.velocity += dir;
+    }
+
+    public virtual bool invunerable()
+    {
+        return false;
     }
 
     public virtual void respawn()

@@ -109,10 +109,10 @@ public class Player : Character {
         }
 
         //Movement
-        if (!isDashing && Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D))
             walk(true);
 
-        if (!isDashing && Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.A))
             walk(false);
 
         //Bullet Time
@@ -149,7 +149,7 @@ public class Player : Character {
         {
             kickbox.isOld = true;
             kickbox.contact.SendMessage("takeDamage", 50);
-            kickbox.contact.SendMessage("knockback", body.velocity * 3);
+            kickbox.contact.SendMessage("knockback", (body.velocity - kickbox.contact.GetComponent<Rigidbody2D>().velocity) * 5);
         }
 
 

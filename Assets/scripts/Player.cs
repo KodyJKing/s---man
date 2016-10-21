@@ -9,6 +9,8 @@ public class Player : Character {
 
     Texture2D px;
 
+    protected Sensor kickbox;
+
     public GameObject projectile;
 
     public float wallJumpAngle = 45;
@@ -33,6 +35,7 @@ public class Player : Character {
     float wallJumpTime = 99;
     float dashTime = 99;
     float timeScale = 1;
+    bool isDashing = false;
 
     public Sprite[] fallFrames;
     public Sprite[] wallJumpFrames;
@@ -43,6 +46,8 @@ public class Player : Character {
 
     new void Start() {
         base.Start();
+
+        kickbox = transform.Find("kickbox").gameObject.GetComponent<Sensor>();
 
         px = new Texture2D(1, 1);
         px.SetPixel(0, 0, Color.white);
@@ -89,15 +94,9 @@ public class Player : Character {
             spacePressTime += jumpWindow;
         }
 
-        //Movement
-        if (Input.GetKey(KeyCode.D))
-            walk(true);
-
-        if (Input.GetKey(KeyCode.A))
-            walk(false);
-
         //Dashing
         dashTime += Time.deltaTime;
+        isDashing = dashTime < 0.5F;
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             face(false);
@@ -108,6 +107,13 @@ public class Player : Character {
             face(true);
             dash();
         }
+
+        //Movement
+        if (Input.GetKey(KeyCode.D))
+            walk(true);
+
+        if (Input.GetKey(KeyCode.A))
+            walk(false);
 
         //Bullet Time
         if (Input.GetKey(KeyCode.W) && spendStamina(Time.deltaTime * (bulletTimeCost + currStaminaRegen), 0, true))
@@ -139,9 +145,17 @@ public class Player : Character {
         if (Input.GetKeyDown(KeyCode.RightBracket))
             Time.timeScale *= 10F;
 
+        if(isDashing && kickbox.touch && !kickbox.isOld)
+        {
+            kickbox.isOld = true;
+            kickbox.contact.SendMessage("takeDamage", 50);
+            kickbox.contact.SendMessage("knockback", (body.velocity - kickbox.contact.GetComponent<Rigidbody2D>().velocity) * 5);
+        }
+
+
         //Cheats
-        if (Input.GetKeyDown(KeyCode.P))
-            health -= 50;
+        if (Input.GetKeyDown(KeyCode.R))
+            onDeath();
 
         if (Input.GetKey(KeyCode.Q))
             stamina = maxStamina;
@@ -214,13 +228,13 @@ public class Player : Character {
         GUI.DrawTexture(rect, px, ScaleMode.StretchToFill, true, 10);
     }
 
-    override protected void setFrame()
+    protected override void setFrame()
     {
         if (wallJumpTime < 0.5F)
             setWallJumpFrame();
         else if (shouldHang())
             sprite.sprite = wallFrame;
-        else if (dashTime < 0.5F)
+        else if (isDashing)
             sprite.sprite = dashFrame;
         else if (fallTime > 0)
             setFallFrame();
@@ -261,11 +275,13 @@ public class Player : Character {
         return platform.bounds.max.y - 0.5F > footBox.bounds.max.y;
     }
 
+    public override bool invunerable()
+    {
+        return isDashing;
+    }
+
     public override void respawn()
     {
-        //base.respawn();
-        //alreadyWallJumped = false;
-        //fallTime = 0;
         restartCurrentScene();
     }
 

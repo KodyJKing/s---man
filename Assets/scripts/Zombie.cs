@@ -5,13 +5,15 @@ public class Zombie : Character {
 
     GameObject player;
 
-    public float seekDist = 1;
-    public float maxSeekDist = 10;
+    protected Sensor hitbox;
+
     public int damage = 50;
 
     // Use this for initialization
     new void Start () {
         base.Start();
+
+        hitbox = transform.Find("hitbox").gameObject.GetComponent<Sensor>();
 
         player = GameObject.Find("player");
 	}
@@ -20,8 +22,7 @@ public class Zombie : Character {
 	new void Update () {
         base.Update();
 
-        float dist = (player.transform.position - transform.position).magnitude;
-        bool seeking = dist > seekDist && dist < maxSeekDist && hasLineOfSight();
+        bool seeking = !hitbox.touch && hasLineOfSight();
 
         if (player.transform.position.x > transform.position.x)
         {
@@ -39,7 +40,7 @@ public class Zombie : Character {
         if(Mathf.Abs(body.velocity.x) < 1F && seeking && Random.Range(0, 1F) < 0.5F)
             tryJump();
 
-        if(dist < seekDist && spendStamina(50, 2, false))
+        if(hitbox.touch && spendStamina(34, 1, false))
         {
             Vector2 throwDir = (Vector2)(player.transform.position - transform.position).normalized + Vector2.up;
             player.SendMessage("takeDamage", damage);

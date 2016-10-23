@@ -152,7 +152,6 @@ public class Player : Character {
             kickbox.isOld = true;
             //kickbox.contact.SendMessage("takeDamage", 50);
             Vector2 kickDir = kickbox.contact.transform.position - transform.position;
-            //kickDir = new Vector2(kickDir.x * 2, kickDir.y);
             kickbox.contact.SendMessage("knockback", kickDir.normalized * 80);
         }
 
@@ -162,7 +161,10 @@ public class Player : Character {
             onDeath();
 
         if (Input.GetKey(KeyCode.Q))
+        {
             stamina = maxStamina;
+            health = maxHealth;
+        }
 
         if (Input.GetKeyDown(KeyCode.LeftBracket))
             timeScale -= 0.1F;

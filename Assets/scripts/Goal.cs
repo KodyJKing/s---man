@@ -24,6 +24,6 @@ public class Goal : MonoBehaviour {
     void OnGUI()
     {
         if(victory)
-            GUI.Label(new Rect(Screen.width / 2, Screen.height / 2, 200, 20), "YOU WON!");
+            GUI.Label(new Rect(Screen.width / 2, Screen.height * 3.0F / 4, 200, 20), "YOU WON!");
     }
 }

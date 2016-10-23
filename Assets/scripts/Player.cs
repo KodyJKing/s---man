@@ -20,6 +20,11 @@ public class Player : Character {
     public float dashCost = 40;
     public float dashCooldown = 0.4F;
     public float dashForce = 1200;
+    public float dashDuration = 0.4F;
+
+    public float kickCost = 100;
+    public float kickCooldown = 0.5F;
+    public float kickForce = 80;
 
     public Color staminaBarColor;
     public Color staminaBarBackgroundColor;
@@ -34,8 +39,7 @@ public class Player : Character {
     float fallTime = 0;
     float wallJumpTime = 99;
     float dashTime = 99;
-    float timeScale = 1;
-    bool isDashing = false;
+    static float timeScale = 1;
 
     public Sprite[] fallFrames;
     public Sprite[] wallJumpFrames;
@@ -96,8 +100,7 @@ public class Player : Character {
 
         //Dashing
         dashTime += Time.deltaTime;
-        isDashing = dashTime < 0.5F;
-        if (!isDashing)
+        if (!isDashing())
             kickbox.isOld = false;
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
@@ -133,6 +136,17 @@ public class Player : Character {
             body.AddForce(-body.velocity * 30);
             fallTime = 0;
         }
+        
+        //Kick
+        if(isDashing() && kickbox.touch && !kickbox.isOld)
+        {
+            coolDown = kickCooldown;
+            stamina -= kickCost;
+            //kickbox.contact.SendMessage("takeDamage", 50);
+            Vector2 kickDir = kickbox.contact.transform.position - transform.position;
+            kickbox.contact.SendMessage("knockback", kickDir.normalized * kickForce);
+        }
+        kickbox.isOld = true;
 
         //Other
         if (shouldHang())
@@ -146,15 +160,6 @@ public class Player : Character {
 
         if (Input.GetKeyDown(KeyCode.RightBracket))
             Time.timeScale *= 10F;
-
-        if(isDashing && kickbox.touch && !kickbox.isOld)
-        {
-            kickbox.isOld = true;
-            //kickbox.contact.SendMessage("takeDamage", 50);
-            Vector2 kickDir = kickbox.contact.transform.position - transform.position;
-            kickbox.contact.SendMessage("knockback", kickDir.normalized * 80);
-        }
-
 
         //Cheats
         if (Input.GetKeyDown(KeyCode.R))
@@ -195,7 +200,6 @@ public class Player : Character {
             GameObject proj = spawnBullet((!facingRight ? 180 : 0) + randomAngle);
             proj.transform.Translate(transform.right * 0.15F);
         }
-        //body.AddForce(Vector2.left * (facingRight ? 100 : -100));
     }
 
     void dash()
@@ -208,11 +212,53 @@ public class Player : Character {
         body.AddForce((facingRight ? Vector2.right : Vector2.left) * dashForce);
     }
 
+    bool isDashing()
+    {
+        return dashTime < dashDuration;
+    }
+
     GameObject spawnBullet(float angle)
     {
         GameObject proj = (GameObject)Instantiate(projectile, transform.position, transform.rotation);
         proj.transform.Rotate(transform.forward * angle);
         return proj;
+    }
+
+    void findObstacle()
+    {
+        Navigation.arcTrace(body.position, body.velocity, body.gravityScale * Physics2D.gravity, 1, 10, "platform");
+    }
+
+    protected override void onDeath()
+    {
+        respawn();
+    }
+
+    bool shouldHang()
+    {
+        if (!(left.touch ^ right.touch))
+            return false;
+        if (!wideFoot.touch)
+            return true;
+        Collider2D platform = wideFoot.contact.GetComponent<Collider2D>();
+        Collider2D footBox = wideFoot.GetComponent<Collider2D>();
+        return platform.bounds.max.y - 0.5F > footBox.bounds.max.y;
+    }
+
+    public override bool invunerable()
+    {
+        return isDashing();
+    }
+
+    public override void respawn()
+    {
+        restartCurrentScene();
+    }
+
+    public void restartCurrentScene()
+    {
+        int scene = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(scene, LoadSceneMode.Single);
     }
 
     void OnGUI()
@@ -240,7 +286,7 @@ public class Player : Character {
             setWallJumpFrame();
         else if (shouldHang())
             sprite.sprite = wallFrame;
-        else if (isDashing)
+        else if (isDashing())
             sprite.sprite = dashFrame;
         else if (fallTime > 0)
             setFallFrame();
@@ -260,48 +306,11 @@ public class Player : Character {
         sprite.sprite = wallJumpFrames[frame];
     }
 
-    /*public override void face(bool right)
+    public override void face(bool right)
     {
-        if (isDashing)
+        if (isDashing())
             return;
         sprite.flipX = !facingRight;
         facingRight = right;
-    }*/
-
-    void findObstacle()
-    {
-        Navigation.arcTrace(body.position, body.velocity, body.gravityScale * Physics2D.gravity, 1, 10, "platform");
-    }
-
-    protected override void onDeath()
-    {
-        respawn();
-    }
-
-    bool shouldHang()
-    {
-        if (!(left.touch ^ right.touch))
-            return false;
-        if (!wideFoot.touch)
-            return true;
-        Collider2D platform = wideFoot.contact.GetComponent<Collider2D>();
-        Collider2D footBox = wideFoot.GetComponent<Collider2D>();
-        return platform.bounds.max.y - 0.5F > footBox.bounds.max.y;
-    }
-
-    public override bool invunerable()
-    {
-        return isDashing;
-    }
-
-    public override void respawn()
-    {
-        restartCurrentScene();
-    }
-
-    public void restartCurrentScene()
-    {
-        int scene = SceneManager.GetActiveScene().buildIndex;
-        SceneManager.LoadScene(scene, LoadSceneMode.Single);
     }
 }

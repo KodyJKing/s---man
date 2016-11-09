@@ -100,7 +100,7 @@ public class Character : MonoBehaviour {
     public void walk(bool dir)
     {
         face(dir);
-        body.AddForce(new Vector2((dir ? 1 : -1) * walkingForce * control * Time.deltaTime, 0));
+        body.AddForce(new Vector2((dir ? 1 : -1) * walkingForce * control, 0));
         if (dir)
         {
             if (body.velocity.x > maxWalkSpeed)

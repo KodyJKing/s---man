@@ -14,7 +14,8 @@ public class Sensor : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        if (contact != null && !contact.GetComponent<Collider2D>().enabled)
+            touch = false;
 	}
 
     void OnTriggerEnter2D(Collider2D other)

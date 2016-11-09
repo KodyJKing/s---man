@@ -20,7 +20,7 @@ namespace Assets.scripts
                 float t = stepSize * i;
                 Vector2 nextPos = start + velocity * t + acceleration * t * t / 2;
                 Debug.DrawLine(lastPos, nextPos, Color.white, 10, false);
-                RaycastHit2D hit = Physics2D.Raycast(lastPos, nextPos, nextPos.magnitude, layerMask);
+                RaycastHit2D hit = Physics2D.Linecast(lastPos, nextPos, layerMask);
                 results[i - 1] = hit;
                 lastPos = nextPos;
             }

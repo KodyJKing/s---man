@@ -130,10 +130,10 @@ public class Player : Character {
         if (Input.GetKey(KeyCode.LeftShift) && (left.touch ^ right.touch) && !alreadyWallJumped && spendStamina(Time.deltaTime * 50, 0, true))
         {
             if (right.touch)
-                body.AddForce(Vector2.right * Time.deltaTime * 1000);
+                body.AddForce(Vector2.right * 20);
             else
-                body.AddForce(Vector2.left * Time.deltaTime * 1000);
-            body.AddForce(-body.velocity * 30);
+                body.AddForce(Vector2.left * 20);
+            body.velocity *= 0.1F;
             fallTime = 0;
         }
         
@@ -252,14 +252,14 @@ public class Player : Character {
 
     public override void respawn()
     {
-        restartCurrentScene();
+        Common.restartCurrentScene();
     }
 
-    public void restartCurrentScene()
-    {
-        int scene = SceneManager.GetActiveScene().buildIndex;
-        SceneManager.LoadScene(scene, LoadSceneMode.Single);
-    }
+    //public void restartCurrentScene()
+    //{
+    //    int scene = SceneManager.GetActiveScene().buildIndex;
+    //    SceneManager.LoadScene(scene, LoadSceneMode.Single);
+    //}
 
     void OnGUI()
     {

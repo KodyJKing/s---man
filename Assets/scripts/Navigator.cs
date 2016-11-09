@@ -7,8 +7,11 @@ public class Navigator : Character {
     public GameObject platA;
 
     // Use this for initialization
+    float endX, endXV, wTime;
+    float time = 6;
     new void Start () {
         base.Start();
+        walkModel(time, 100, true, 54F, body.position.x, body.velocity.x, out endX, out endXV);
     }
 
     bool dir = true;
@@ -18,14 +21,25 @@ public class Navigator : Character {
 	new void Update () {
         base.Update();
 
-        if (foot.touch && !jumped)
+        //if (foot.touch && !jumped)
+        //{
+        //    walk(dir);
+        //}
+        //if (foot.touch && canMakeJump() && !jumped)
+        //{
+        //    tryJump();
+        //    jumped = true;
+        //    Debug.Log("Jumped!");
+        //}
+
+        //Debug.Log(body.velocity.x);
+
+        walk(true);
+        wTime += Time.deltaTime;
+        if (wTime > time)
         {
-            walk(dir);
-        }
-        if (foot.touch && canMakeJump() && !jumped)
-        {
-            tryJump();
-            jumped = true;
+            Debug.Log(body.position.x - endX);
+            Time.timeScale = 0;
         }
     }
 
@@ -42,12 +56,27 @@ public class Navigator : Character {
     bool canMakeJump()
     {
         Vector2 jumpVel = body.velocity + Vector2.up * jumpForce;
-        RaycastHit2D[] hits = Navigation.arcTrace(body.position + Vector2.down * 0.2F, jumpVel, body.gravityScale * Physics2D.gravity, 10, 100, "platform");
+        RaycastHit2D[] hits = Navigation.arcTrace(body.position + Vector2.down, jumpVel, body.gravityScale * Physics2D.gravity, 10, 100, "platform");
         for(int i = 0; i < 100; i++)
         {
             if (hits[i] && hits[i].transform.gameObject != gameObject)
                 return Mathf.Abs(hits[i].normal.x) < 0.2F && hits[i].transform.gameObject == platA;
         }
         return false;
+    }
+
+    void walkModel(float time, int steps, bool dir, float friction, float x, float xv, out float xo, out float xvo)
+    {
+        float dt = time / steps;
+        for(int i = 0; i < steps; i++)
+        {
+            float accl = (walkingForce - friction * body.mass * Mathf.Sign(xv)) / body.mass;
+            xv += accl * dt;
+            if (Mathf.Abs(xv) > maxWalkSpeed)
+                xv = maxWalkSpeed * Mathf.Sign(xv);
+            x += xv * dt + accl * dt * dt * 0.5F;
+        }
+        xo = x;
+        xvo = xv;
     }
 }

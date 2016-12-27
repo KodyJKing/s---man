@@ -9,7 +9,7 @@ public class Turret : MonoBehaviour {
     {
         Vector3 myPosition = this.transform.position;
         Vector3 targetPosition = target.transform.position;
-        Vector3 direction = (targetPosition - myPosition).normalized;
+        Vector3 direction = (targetPosition - myPosition);
         angle = 180 - Vector3.Angle(new Vector3(1, 0, 0), direction);
         if (targetPosition.y > myPosition.y)
             angle *= -1;

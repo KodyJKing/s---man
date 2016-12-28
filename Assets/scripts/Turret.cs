@@ -4,6 +4,13 @@ using System.Collections;
 public class Turret : MonoBehaviour {
     public float angle;
     public GameObject target;
+    public float shotInterval;
+    private float time;
+    //Start is called once
+    void Start()
+    {
+        shotInterval = 2;
+    }
     // Update is called once per frame
     void Update()
     {
